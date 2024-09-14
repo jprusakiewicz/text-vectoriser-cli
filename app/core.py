@@ -7,8 +7,8 @@ from app.wikipedia_connector import get_wikipedia_core_content, get_wikipedia_co
 
 def train_and_save_vectorizer(output_model_path: str, train_file: str, vectorizer_type: str):
     urls = load_data(train_file)
-    # documents = scrape_wikipedia_core_texts_contents(urls)
-    documents = get_wikipedia_core_texts_contents(urls)
+    documents = get_wikipedia_core_texts_contents(urls)  # or scrape_wikipedia_core_texts_contents(urls)
+    # todo this is a good place for data preprocess like a stemming, lemmatization, stopwords removal, lowercase, etc.
     vectorizer = train_vectorizer(vectorizer_type, list(documents.values()))
     save_vectorizer(vectorizer, output_model_path)
 
@@ -17,13 +17,14 @@ def load_vectorizer_and_pick_best(distance_metric: str, query_url: str, test_fil
     vectorizer = load_vectorizer(vectorizer_path)
 
     test_urls = load_data(test_file)
-    # test_documents = scrape_wikipedia_core_texts_contents(test_urls)
-    test_documents = get_wikipedia_core_texts_contents(test_urls)
-    query_text = get_wikipedia_core_content(query_url)
 
-    best_idx = transform_and_pick_best_document(vectorizer, list(test_documents.values()), query_text, distance_metric)
-    best_match_text = list(test_documents.values())[best_idx]
-    best_match_url = reverse_lookup(test_documents, best_match_text)
+    test_documents_unprocessed = get_wikipedia_core_texts_contents(
+        test_urls)  # or scrape_wikipedia_core_texts_contents(test_urls)
+    query_text = get_wikipedia_core_content(query_url)  # or scrape_wikipedia_core_text_content(query_url)
+
+    best_idx = transform_and_pick_best_document(vectorizer, list(test_documents_unprocessed.values()), query_text,
+                                                distance_metric)
+    best_match_url = list(test_documents_unprocessed.keys())[best_idx]
     return best_match_url
 
 

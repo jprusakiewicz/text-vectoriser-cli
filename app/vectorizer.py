@@ -26,6 +26,7 @@ def transform_and_pick_best_document(vectorizer: Union[CountVectorizer, TfidfVec
                                      test_documents: List[str],
                                      query_text: str,
                                      distance_metric: str) -> int:
+    # todo this is a good place for data preprocess like a stemming, lemmatization, stopwords removal, lowercase, etc.
     query_vec = vectorizer.transform([query_text]).toarray()[0]
     test_vecs = vectorizer.transform(test_documents)
     best_idx = pick_best_document(query_vec, test_vecs, distance_metric)
