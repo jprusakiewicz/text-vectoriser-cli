@@ -9,7 +9,36 @@ from app.vectorizer import pick_best_document
 
 class TestVectorizer(unittest.TestCase):
     @pytest.mark.unittest
-    def test_vectorizer_with_tfidf(self):
+    def test_vectorizer_with_count_manhattan_pl(self):
+        train_documents = [
+            "Kot siedzi na macie.",
+            "Psy są lojalnymi zwierzętami i szczekają.",
+            "Ptaki mogą latać wysoko na niebie, a jeż nie.",
+            "Ryby pływają w oceanie i jeziorach.",
+            "Słońce wschodzi na wschodzie każdego ranka."
+        ]
+        test_documents = [
+            "Pies bawi się na podwórku.",
+            "Koty uwielbiają gonić myszy.",
+            "Ptaki budują gniazda na wysokich drzewach, aby złożyć jaja.",
+            "Ryby żyją zarówno w środowiskach słodkowodnych, jak i słonowodnych.",
+            "Jeż jest małym ssakiem znanym ze swojego kolczastego futra.",
+            "Słońce zachodzi na zachodzie pod koniec dnia."
+        ]
+        query_text = "Dokąd nocą tupta jeż?"
+        vectorizer_type = 'count'
+        distance_metric = 'manhattan'
+        # when
+        vectorizer = train_vectorizer(vectorizer_type, train_documents)
+        best_idx = transform_and_pick_best_document(vectorizer=vectorizer, distance_metric=distance_metric,
+                                                    query_text=query_text, test_documents=test_documents)
+
+        # then
+        assert isinstance(best_idx, int)
+        assert best_idx == 4
+
+    @pytest.mark.unittest
+    def test_vectorizer_with_tfidf_en(self):
         train_documents = [
             "The cat is sitting on the mat.",
             "Dogs are loyal animals and they bark.",
@@ -20,9 +49,10 @@ class TestVectorizer(unittest.TestCase):
         test_documents = [
             "A dog is playing in the yard.",
             "Cats love to chase mice.",
+            "The sun sets in the west at the end of the day.",
             "Birds build nests in tall trees to lay eggs.",
-            "Fish are found in both freshwater and saltwater environments.",
-            "The sun sets in the west at the end of the day."
+            "Fish are found in both freshwater and saltwater environments."
+
         ]
         query_text = "The sun rises and sets every day."
         vectorizer_type = 'tfidf'
@@ -35,7 +65,7 @@ class TestVectorizer(unittest.TestCase):
 
         # then
         assert isinstance(best_idx, int)
-        assert best_idx == 4
+        assert best_idx == 2
 
 
 class TestSimilarityPicker(unittest.TestCase):
