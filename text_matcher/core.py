@@ -1,15 +1,16 @@
 from typing import List
 
-# from app.wikipedia_scraper import scrape_wikipedia_core_texts_contents
-from app.vectorizer import train_vectorizer, save_vectorizer, load_vectorizer, transform_and_pick_best_document
-from app.wikipedia_connector import get_wikipedia_core_content, get_wikipedia_core_texts_contents
+# from text_matcher.wikipedia_scraper import scrape_wikipedia_core_texts_contents
+from text_matcher.vectorizer import train_vectorizer, save_vectorizer, load_vectorizer, transform_and_pick_best_document
+from text_matcher.vectorizer_config import VectorizerConfig
+from text_matcher.wikipedia_connector import get_wikipedia_core_content, get_wikipedia_core_texts_contents
 
 
-def train_and_save_vectorizer(output_model_path: str, train_file: str, vectorizer_type: str):
+def train_and_save_vectorizer(output_model_path: str, train_file: str, vectorizer_config: VectorizerConfig):
     urls = load_data(train_file)
     documents = get_wikipedia_core_texts_contents(urls)  # or scrape_wikipedia_core_texts_contents(urls)
     # todo this is a good place for data preprocess like a stemming, lemmatization, stopwords removal, lowercase, etc.
-    vectorizer = train_vectorizer(vectorizer_type, list(documents.values()))
+    vectorizer = train_vectorizer(vectorizer_config, list(documents.values()))
     save_vectorizer(vectorizer, output_model_path)
 
 

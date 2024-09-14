@@ -1,10 +1,12 @@
 import unittest
 
-from app.vectorizer import transform_and_pick_best_document, train_vectorizer
+from text_matcher.vectorizer import transform_and_pick_best_document, train_vectorizer
 import pytest
 import numpy as np
 from scipy.sparse import csr_matrix
-from app.vectorizer import pick_best_document
+from text_matcher.vectorizer import pick_best_document
+from text_matcher.vectorizer_config import CountVectorizerConfig, TfidfVectorizerConfig, HashingVectorizerConfig, \
+    build_vectorizer_config
 
 
 class TestVectorizer(unittest.TestCase):
@@ -26,10 +28,10 @@ class TestVectorizer(unittest.TestCase):
             "Słońce zachodzi na zachodzie pod koniec dnia."
         ]
         query_text = "Dokąd nocą tupta jeż?"
-        vectorizer_type = 'count'
+        vectorizer_config = CountVectorizerConfig()
         distance_metric = 'manhattan'
         # when
-        vectorizer = train_vectorizer(vectorizer_type, train_documents)
+        vectorizer = train_vectorizer(vectorizer_config, train_documents)
         best_idx = transform_and_pick_best_document(vectorizer=vectorizer, distance_metric=distance_metric,
                                                     query_text=query_text, test_documents=test_documents)
 
@@ -55,10 +57,10 @@ class TestVectorizer(unittest.TestCase):
 
         ]
         query_text = "The sun rises and sets every day."
-        vectorizer_type = 'tfidf'
+        vectorizer_config = TfidfVectorizerConfig()
         distance_metric = 'cosine'
         # when
-        vectorizer = train_vectorizer(vectorizer_type, train_documents)
+        vectorizer = train_vectorizer(vectorizer_config, train_documents)
 
         best_idx = transform_and_pick_best_document(vectorizer=vectorizer, distance_metric=distance_metric,
                                                     query_text=query_text, test_documents=test_documents)
@@ -69,7 +71,6 @@ class TestVectorizer(unittest.TestCase):
 
 
 class TestSimilarityPicker(unittest.TestCase):
-
     @pytest.mark.unittest
     def test_pick_best_document_with_unsupported_distance_metric(self):
         query_vec = np.array([1, 0, 1])
@@ -108,3 +109,41 @@ def test_pick_best_document(distance_metric, expected):
 
     assert isinstance(best_idx, int)
     assert best_idx == expected
+
+
+class TestVectorizerConfig(unittest.TestCase):
+    @pytest.mark.unittest
+    def test_build_count_vectorizer(self):
+        count_vectorizer_config = CountVectorizerConfig(
+            stop_words='english',
+            max_features=5000
+        )
+        self.assertIsInstance(count_vectorizer_config, CountVectorizerConfig)
+        self.assertEqual(count_vectorizer_config.stop_words, 'english')
+        self.assertEqual(count_vectorizer_config.max_features, 5000)
+
+    @pytest.mark.unittest
+    def test_build_tfidf_vectorizer(self):
+        tfidf_vectorizer_config = TfidfVectorizerConfig(
+            norm='l2',
+            smooth_idf=True
+        )
+        self.assertIsInstance(tfidf_vectorizer_config, TfidfVectorizerConfig)
+        self.assertEqual(tfidf_vectorizer_config.norm, 'l2')
+        self.assertTrue(tfidf_vectorizer_config.smooth_idf)
+
+    @pytest.mark.unittest
+    def test_build_hashing_vectorizer(self):
+        hashing_vectorizer_config = HashingVectorizerConfig(
+            n_features=2048
+        )
+        self.assertIsInstance(hashing_vectorizer_config, HashingVectorizerConfig)
+        self.assertEqual(hashing_vectorizer_config.n_features, 2048)
+
+    def test_wrong_config_unsupported_vectorizer_type(self):
+        with self.assertRaises(ValueError):
+            build_vectorizer_config('count', '{"vectorizer_type": "unsupported"}')
+
+    def test_wrong_config_tfidf_values_for_count_vectorizer(self):
+        with self.assertRaises(ValueError):
+            build_vectorizer_config('count', '{"vectorizer_type": "count", "norm": "l2"}')

@@ -6,15 +6,18 @@ from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, HashingVectorizer
 from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances, manhattan_distances
 
+from text_matcher.vectorizer_config import VectorizerConfig, CountVectorizerConfig, TfidfVectorizerConfig, \
+    HashingVectorizerConfig
 
-def train_vectorizer(vectorizer_type: str, documents):
-    match vectorizer_type:
-        case 'count':
-            vectorizer = CountVectorizer()
-        case 'tfidf':
-            vectorizer = TfidfVectorizer()
-        case 'hashing':
-            vectorizer = HashingVectorizer()
+
+def train_vectorizer(vectorizer_config: VectorizerConfig, documents):
+    match vectorizer_config:
+        case CountVectorizerConfig():
+            vectorizer = CountVectorizer(**dict(vectorizer_config))
+        case TfidfVectorizerConfig():
+            vectorizer = TfidfVectorizer(**dict(vectorizer_config))
+        case HashingVectorizerConfig():
+            vectorizer = HashingVectorizer(**dict(vectorizer_config))
         case _:
             raise ValueError("Unsupported vectorizer type.")
 

@@ -1,5 +1,10 @@
+from typing import Optional
+
 import typer
-from app.core import train_and_save_vectorizer, load_vectorizer_and_pick_best
+from pydantic import ValidationError
+
+from text_matcher.core import train_and_save_vectorizer, load_vectorizer_and_pick_best
+from text_matcher.vectorizer_config import build_vectorizer_config
 
 cli_app = typer.Typer()
 
@@ -11,10 +16,16 @@ def train(
         train_file_path: str = typer.Argument("data/train.csv",
                                               help="Wikipedia URLs csv file path"),
         output_model_path: str = typer.Argument("vectorizer_model.pkl",
-                                                help="Path to save the model")
+                                                help="Path to save the model"),
+        vectorizer_params: Optional[str] = "{}"
+
 ):
-    # todo add vectorizer params
-    train_and_save_vectorizer(output_model_path, train_file_path, vectorizer_type)
+    try:
+        vectorizer_config = build_vectorizer_config(vectorizer_type, vectorizer_params)
+    except ValidationError:
+        typer.echo(f"Invalid vectorizer parameters {vectorizer_params} for {vectorizer_type} vectorizer.")
+        raise typer.Exit(1)
+    train_and_save_vectorizer(output_model_path, train_file_path, vectorizer_config)
     typer.echo(f"Model {vectorizer_type} saved as {output_model_path}.")
 
 

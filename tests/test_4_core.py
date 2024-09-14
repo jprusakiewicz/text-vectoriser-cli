@@ -3,16 +3,17 @@ import os
 
 import pytest
 
-from app.core import train_and_save_vectorizer, load_vectorizer_and_pick_best
+from text_matcher.core import train_and_save_vectorizer, load_vectorizer_and_pick_best
+from text_matcher.vectorizer_config import CountVectorizerConfig, HashingVectorizerConfig, TfidfVectorizerConfig
 
 
 @pytest.mark.internet
 @pytest.mark.parametrize(
     "url, metric, vectorizer_type",
     [
-        ("https://pl.wikipedia.org/wiki/Technologia_haptyczna", 'cosine', "tfidf"),
-        ("https://pl.wikipedia.org/wiki/Sterowanie_predykcyjne", 'euclidean', 'hashing'),
-        ("https://pl.wikipedia.org/wiki/Automat", 'manhattan', 'count'),
+        ("https://pl.wikipedia.org/wiki/Technologia_haptyczna", 'cosine', CountVectorizerConfig()),
+        ("https://pl.wikipedia.org/wiki/Sterowanie_predykcyjne", 'euclidean', HashingVectorizerConfig()),
+        ("https://pl.wikipedia.org/wiki/Automat", 'manhattan', TfidfVectorizerConfig()),
     ]
 )
 def test_e2e(url, metric, vectorizer_type):

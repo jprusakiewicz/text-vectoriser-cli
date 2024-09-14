@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock
 
 import pytest
 
-from app.wikipedia_scraper import scrape_wikipedia_core_text_content
+from text_matcher.wikipedia_scraper import scrape_wikipedia_core_text_content
 
 
 class TestScraper(unittest.TestCase):

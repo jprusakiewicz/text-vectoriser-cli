@@ -1,7 +1,7 @@
 import unittest
 import pytest
 from unittest.mock import patch, Mock
-from app.wikipedia_connector import get_wikipedia_core_texts_contents, get_wikipedia_core_content, ArticleNotFound
+from text_matcher.wikipedia_connector import get_wikipedia_core_texts_contents, get_wikipedia_core_content, ArticleNotFound
 
 
 class TestWikipediaConnector(unittest.TestCase):
@@ -53,7 +53,7 @@ class TestWikipediaConnector(unittest.TestCase):
             get_wikipedia_core_content("https://pl.wikipedia.org/wiki/Test")
 
     @pytest.mark.unittest
-    @patch('app.wikipedia_connector.get_wikipedia_core_content')
+    @patch('text_matcher.wikipedia_connector.get_wikipedia_core_content')
     def test_fetches_multiple_articles_successfully(self, mock_get_content):
         mock_get_content.side_effect = ["Test content 1", "Test content 2"]
 
@@ -66,7 +66,7 @@ class TestWikipediaConnector(unittest.TestCase):
         })
 
     @pytest.mark.unittest
-    @patch('app.wikipedia_connector.get_wikipedia_core_content')
+    @patch('text_matcher.wikipedia_connector.get_wikipedia_core_content')
     def test_skips_articles_when_not_found_and_not_raising(self, mock_get_content):
         mock_get_content.side_effect = [ArticleNotFound("Article not found"), "Test content 2"]
 
@@ -78,7 +78,7 @@ class TestWikipediaConnector(unittest.TestCase):
         })
 
     @pytest.mark.unittest
-    @patch('app.wikipedia_connector.get_wikipedia_core_content')
+    @patch('text_matcher.wikipedia_connector.get_wikipedia_core_content')
     def test_raises_exception_when_article_not_found_and_raising(self, mock_get_content):
         mock_get_content.side_effect = [ArticleNotFound("Article not found"), "Test content 2"]
 
