@@ -7,7 +7,7 @@ for document comparison.
 ## Features
 
 - **train**: train a text vectorizer using different types (`CountVectorizer`, `HashingVectorizer`, `TfidfVectorizer`).
-- **pick-best**: Find the best matching document from a set of documents given a query.
+- **pick-best**: Find the best matching document from a document or set of documents given a query.
 - Supports distance metrics such as (`cosine`, `Euclidean`, and `Manhattan`) distances.
 
 ## Installation
@@ -45,7 +45,6 @@ or specify parameters:
 
 ```bash
 python -m text_matcher.cli train --vectorizer-type tfidf --train-file-path data/train.csv --output-model-path vectorizer_model.pkl --vectorizer-params '{"max_df": 1, "min_df": 1, "binary": true}' 
-
 
 ```
 
