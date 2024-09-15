@@ -30,23 +30,23 @@ there are two commands available:
 train a text vectorizer.
 
 - **Arguments**:
-    - `vectorizer_type`: type of vectorizer to use (`count`, `hashing`, `tfidf`). **[default: count]**   
+    - `vectorizer_type`: type of vectorizer to use (`count`, `hashing`, `tfidf`). **[default: count]**
     - `train_file_path`: path to the data file with Wikipedia URLs . **[default: data/train.csv]**
     - `output_model_path`: path to save the trained model. **[default: vectorizer_model.pkl]**
     - `vectorizer_params: additional parameters for the vectorizer in json format`. (default params: see below)
 
 example usage:
+
 ```bash
 python -m text_matcher.cli train
 ```
-or specify parameters:
-```bash
-python -m text_matcher.cli train vectorizer-type=tfidf train-file-path=data/train.csv output-model-path=vectorizer_model.pkl
 
-```
-or just:
+or specify parameters:
+
 ```bash
-python -m text_matcher.cli train tfidf data/train.csv vectorizer_model.pkl
+python -m text_matcher.cli train --vectorizer-type tfidf --train-file-path data/train.csv --output-model-path vectorizer_model.pkl --vectorizer-params '{"max_df": 1, "min_df": 1, "binary": true}' 
+
+
 ```
 
 #### 2. pick-best
@@ -60,9 +60,19 @@ find the best matching document from a set of documents given a query.
     - `distance_metric`:  Distance metric: cosine, euclidean, manhattan **[default: cosine]**
 
 example usage:
+
+if you want to match single document:
+
 ```bash
-python -m text_matcher.cli pick-best https://pl.wikipedia.org/wiki/ED-209 data/test.csv vectorizer_model.pkl cosine
+python -m text_matcher.cli pick-best https://pl.wikipedia.org/wiki/ED-209 --documents-path data/test.csv --vectorizer-path vectorizer_model.pkl --distance-metric cosine
 ```
+
+if you want to match multiple documents:
+
+```bash
+python -m text_matcher.cli pick-best data/queries.csv --documents-path data/test.csv --vectorizer-path vectorizer_model.pkl --distance-metric cosine
+```
+
 ### Default Vectorizer Parameters
 
 ```json
@@ -70,7 +80,10 @@ python -m text_matcher.cli pick-best https://pl.wikipedia.org/wiki/ED-209 data/t
   "all": {
     "lowercase": true,
     "token_pattern": "r'\b\w\w+\b'",
-    "ngram_range": [1, 1],
+    "ngram_range": [
+      1,
+      1
+    ],
     "analyzer": "word",
     "binary": false
   },
@@ -91,6 +104,7 @@ python -m text_matcher.cli pick-best https://pl.wikipedia.org/wiki/ED-209 data/t
   }
 }
 ```
+
 ### get help
 
 If you need help, you can use the `--help` flag to get more information about the available options for each command

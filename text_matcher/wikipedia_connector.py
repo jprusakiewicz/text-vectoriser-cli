@@ -19,15 +19,16 @@ def get_wikipedia_core_texts_contents(urls: List[str], raise_on_error=False) -> 
     documents = {}
     for url in urls:
         try:
-            text = get_wikipedia_core_content(url)
-            documents.update({url: text})
+            text = get_wikipedia_core_text_content(url)
+            cleaned_text = remove_sections_and_clean_text(text, FILTER)
+            documents.update({url: cleaned_text})
         except ArticleNotFound:
             if raise_on_error:
                 raise ArticleNotFound(f"Article not found: {url}")
     return documents
 
 
-def get_wikipedia_core_content(url: str) -> str:
+def get_wikipedia_core_text_content(url: str) -> str:
     title = _get_title_from_url(url)
     text = _fetch_wikipedia_article(title)
     cleaned_text = remove_sections_and_clean_text(text, FILTER)

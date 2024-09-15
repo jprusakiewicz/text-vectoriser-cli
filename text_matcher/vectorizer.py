@@ -81,7 +81,7 @@ def pick_best_document(query_vec: Union[csr_matrix, np.ndarray], test_vecs: Unio
 
 
 def get_distance_function(distance_metric: str):
-    match distance_metric:
+    match distance_metric.lower():
         case 'cosine':
             distance_func = cosine_similarity
         case 'euclidean':
